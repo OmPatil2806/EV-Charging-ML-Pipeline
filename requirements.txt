@@ -14,9 +14,10 @@ seaborn==0.13.2
 plotly==5.23.0
 
 # Serving
-fastapi==0.112.0
-uvicorn[standard]==0.30.5
-pydantic==2.8.2
+fastapi==0.141.1
+uvicorn[standard]==0.53.0
+pydantic==2.13.5
+httpx==0.28.1  # required by fastapi.testclient.TestClient in tests
 
 # Dashboard
 streamlit==1.37.1

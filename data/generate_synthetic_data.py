@@ -16,6 +16,7 @@ import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from src.utils.config import load_config, resolve_path  # noqa: E402
+from src.utils.time_features import time_of_day_bucket  # noqa: E402
 
 VEHICLE_MODELS = {
     "Tesla Model 3": {"battery_kwh": 60.0, "max_charge_rate_kw": 170.0, "km_per_kwh": 6.5},
@@ -35,16 +36,6 @@ CHARGER_TYPE_PROBS = [0.15, 0.55, 0.30]
 USER_TYPES = ["Commuter", "Casual Driver", "Long-Distance Traveler"]
 
 TIME_OF_DAY_COST_MULTIPLIER = {"Morning": 1.0, "Afternoon": 1.1, "Evening": 1.2, "Night": 0.85}
-
-
-def time_of_day_bucket(hour: int) -> str:
-    if 6 <= hour < 12:
-        return "Morning"
-    if 12 <= hour < 18:
-        return "Afternoon"
-    if 18 <= hour < 22:
-        return "Evening"
-    return "Night"
 
 
 def generate_dataset(n: int, seed: int) -> pd.DataFrame:
