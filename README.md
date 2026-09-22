@@ -67,7 +67,7 @@ EV-Charging-ML-Pipeline/
 
 - [x] Phase 0 — Repo scaffolding
 - [x] Phase 1 — Synthetic data generation
-- [ ] Phase 2 — Ingestion & cleaning
+- [x] Phase 2 — Ingestion & cleaning
 - [ ] Phase 3 — Feature engineering
 - [ ] Phase 4 — Model training (classical ML + Keras MLP)
 - [ ] Phase 5 — Evaluation & model selection
