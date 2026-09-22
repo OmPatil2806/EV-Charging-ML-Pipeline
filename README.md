@@ -71,7 +71,7 @@ EV-Charging-ML-Pipeline/
 - [x] Phase 3 — Feature engineering
 - [x] Phase 4 — Model training (classical ML + Keras MLP)
 - [x] Phase 5 — Evaluation & model selection
-- [ ] Phase 6 — Pipeline orchestration
+- [x] Phase 6 — Pipeline orchestration
 - [ ] Phase 7 — Inference API (FastAPI)
 - [ ] Phase 8 — Dashboard (Streamlit)
 - [ ] Phase 9 — Tests & documentation
@@ -86,11 +86,34 @@ pip install -r requirements.txt
 
 ## 6. Running the Pipeline
 
+Run everything end-to-end (data generation, if needed → cleaning → feature engineering →
+training all 5 models → evaluation → saving the best model) with one command:
+
 ```bash
 python pipeline/run_pipeline.py
 ```
 
-(Filled in once Phase 6 lands.)
+The raw dataset is only regenerated if it doesn't already exist. To force a fresh synthetic
+dataset (new random sessions):
+
+```bash
+python pipeline/run_pipeline.py --regenerate-data
+```
+
+Each phase can also be run individually:
+
+```bash
+python data/generate_synthetic_data.py     # Phase 1
+python -m src.data.ingestion               # Phase 2 (inspect raw data quality)
+python -m src.data.cleaning                # Phase 2
+python -m src.features.feature_engineering # Phase 3
+python -m src.models.train                 # Phase 4
+python -m src.evaluation.evaluate          # Phase 5
+```
+
+Note: exact metrics vary slightly between runs (random train/test split, neural net
+initialization) — Gradient Boosting and the Neural Net consistently trade the top spot,
+both well ahead of the linear baselines.
 
 ## 7. Results
 

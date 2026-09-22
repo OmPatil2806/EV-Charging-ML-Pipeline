@@ -112,10 +112,7 @@ def save_artifacts(best_name, best_model, preprocessor, metrics, cfg):
     print(f"Saved metrics -> {artifacts_dir / cfg['artifacts']['metrics_file']}")
 
 
-def main():
-    cfg = load_config()
-    results = train_all_models(cfg)
-
+def evaluate_and_save(results: dict, cfg: dict) -> str:
     metrics, predictions, y_test = evaluate_models(results)
     print("\n=== Test Set Leaderboard ===")
     print_leaderboard(metrics)
@@ -133,6 +130,14 @@ def main():
 
     best_name, best_model = select_best_model(results, metrics)
     save_artifacts(best_name, best_model, results["preprocessor"], metrics, cfg)
+
+    return best_name
+
+
+def main():
+    cfg = load_config()
+    results = train_all_models(cfg)
+    evaluate_and_save(results, cfg)
 
 
 if __name__ == "__main__":
