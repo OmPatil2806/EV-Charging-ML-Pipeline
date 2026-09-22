@@ -69,7 +69,7 @@ EV-Charging-ML-Pipeline/
 - [x] Phase 1 — Synthetic data generation
 - [x] Phase 2 — Ingestion & cleaning
 - [x] Phase 3 — Feature engineering
-- [ ] Phase 4 — Model training (classical ML + Keras MLP)
+- [x] Phase 4 — Model training (classical ML + Keras MLP)
 - [ ] Phase 5 — Evaluation & model selection
 - [ ] Phase 6 — Pipeline orchestration
 - [ ] Phase 7 — Inference API (FastAPI)
