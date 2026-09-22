@@ -37,3 +37,4 @@ models_artifacts/metrics.json
 # IDE
 .vscode/
 .idea/
+.venv/
