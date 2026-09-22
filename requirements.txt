@@ -9,7 +9,7 @@ pyyaml==6.0.3
 joblib==1.6.0
 
 # Visualization
-matplotlib==3.9.1
+matplotlib==3.11.2
 seaborn==0.13.2
 plotly==5.23.0
 

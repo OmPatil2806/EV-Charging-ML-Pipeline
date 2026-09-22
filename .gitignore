@@ -21,7 +21,9 @@ data/processed/*.csv
 data/processed/*.parquet
 models_artifacts/*.pkl
 models_artifacts/*.h5
+models_artifacts/*.keras
 models_artifacts/*.joblib
+models_artifacts/*.png
 models_artifacts/metrics.json
 !data/raw/.gitkeep
 !data/processed/.gitkeep

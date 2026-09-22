@@ -70,7 +70,7 @@ EV-Charging-ML-Pipeline/
 - [x] Phase 2 — Ingestion & cleaning
 - [x] Phase 3 — Feature engineering
 - [x] Phase 4 — Model training (classical ML + Keras MLP)
-- [ ] Phase 5 — Evaluation & model selection
+- [x] Phase 5 — Evaluation & model selection
 - [ ] Phase 6 — Pipeline orchestration
 - [ ] Phase 7 — Inference API (FastAPI)
 - [ ] Phase 8 — Dashboard (Streamlit)
@@ -94,4 +94,23 @@ python pipeline/run_pipeline.py
 
 ## 7. Results
 
-(Filled in once Phase 5 lands — model comparison table and chosen best model.)
+Test-set performance (981 held-out sessions), predicting `energy_consumed_kwh`:
+
+| Model | RMSE (kWh) | MAE (kWh) | R² |
+|---|---|---|---|
+| **Gradient Boosting** (selected) | **1.29** | **0.59** | **0.980** |
+| Neural Net (Keras MLP) | 1.45 | 0.93 | 0.975 |
+| Random Forest | 1.56 | 0.66 | 0.971 |
+| Linear Regression | 2.24 | 1.63 | 0.940 |
+| Ridge | 2.24 | 1.63 | 0.940 |
+
+Gradient Boosting was selected automatically (lowest test RMSE) and saved to `models_artifacts/`.
+The dominant predictor for every tree-based model is `expected_energy_kwh` (the physics-based
+feature: Battery Capacity × SoC Change / 100), accounting for ~95% of feature importance — confirming
+the synthetic dataset carries a real, learnable physical relationship, unlike the original notebook's
+dataset (R² ≈ 0.01 there, on unrelated/near-random data).
+
+Reproduce with:
+```bash
+python -m src.evaluation.evaluate
+```
