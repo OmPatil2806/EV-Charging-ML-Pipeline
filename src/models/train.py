@@ -9,10 +9,11 @@ from src.models.sklearn_models import train_sklearn_models
 from src.utils.config import load_config
 
 
-def train_all_models(cfg: dict = None) -> dict:
+def train_all_models(cfg: dict = None, df=None) -> dict:
     cfg = cfg or load_config()
+    if df is None:
+        df = build_feature_dataset(cfg)
 
-    df = build_feature_dataset(cfg)
     splits = split_data(df, cfg)
 
     preprocessor = build_preprocessor(cfg)
