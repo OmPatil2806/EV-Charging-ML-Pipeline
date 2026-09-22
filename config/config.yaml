@@ -60,6 +60,6 @@ models:
 artifacts:
   dir: "models_artifacts"
   best_model_file: "best_model"
-  scaler_file: "scaler.pkl"
-  encoder_file: "encoder.pkl"
+  preprocessor_file: "preprocessor.pkl"   # single ColumnTransformer: scaling + one-hot encoding
   metrics_file: "metrics.json"
+  residual_plot_file: "residual_plots.png"
