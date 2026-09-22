@@ -36,6 +36,9 @@ generate_synthetic_data.py
         ▼
   best model + preprocessor  →  models_artifacts/
         │
+        ▼
+  src/inference.py  (shared scoring logic: load bundle, build features, predict)
+        │
         ├──▶ api/main.py       (FastAPI: POST /predict)
         └──▶ dashboard/app.py  (Streamlit: EDA + model comparison + live prediction)
 ```
@@ -52,14 +55,15 @@ EV-Charging-ML-Pipeline/
 ├── src/
 │   ├── data/                     # ingestion.py, cleaning.py
 │   ├── features/                 # feature_engineering.py
-│   ├── models/                   # sklearn_models.py, neural_net.py, train.py
-│   ├── evaluation/               # evaluate.py
-│   └── utils/                    # config.py, logger.py
+│   ├── models/                   # sklearn_models.py, neural_net.py, train.py, preprocessing.py
+│   ├── evaluation/                # evaluate.py
+│   ├── inference.py               # shared scoring logic used by both api/ and dashboard/
+│   └── utils/                    # config.py, time_features.py
 ├── pipeline/run_pipeline.py      # end-to-end orchestration
 ├── models_artifacts/             # saved best model + preprocessing artifacts
 ├── notebooks/                    # EDA & experiments (readable narrative)
 ├── api/                          # FastAPI inference service
-├── dashboard/                    # Streamlit app
+├── dashboard/app.py              # Streamlit app (EDA, model comparison, live prediction)
 └── tests/                        # unit tests
 ```
 
@@ -73,7 +77,7 @@ EV-Charging-ML-Pipeline/
 - [x] Phase 5 — Evaluation & model selection
 - [x] Phase 6 — Pipeline orchestration
 - [x] Phase 7 — Inference API (FastAPI)
-- [ ] Phase 8 — Dashboard (Streamlit)
+- [x] Phase 8 — Dashboard (Streamlit)
 - [ ] Phase 9 — Tests & documentation
 
 ## 5. Setup
@@ -155,7 +159,23 @@ saved preprocessor guarantees identical scaling/encoding at inference time.
 
 Interactive API docs (Swagger UI): `http://127.0.0.1:8000/docs`
 
-## 8. Results
+## 8. Dashboard
+
+An interactive Streamlit dashboard sits on top of the same artifacts as the API:
+
+```bash
+streamlit run dashboard/app.py
+```
+
+- **Data Exploration** — dataset size, feature distributions, correlation with the target
+  (diverging bar chart), and categorical session counts.
+- **Model Comparison** — the test-set leaderboard as a table and bar chart, plus the residual
+  plots from Phase 5.
+- **Live Prediction** — a form for a charging session's characteristics that calls
+  `src/inference.py` (the same code path the API uses) and shows the prediction alongside a
+  physics-based sanity estimate (`battery capacity × ΔSoC / efficiency`) for comparison.
+
+## 9. Results
 
 Test-set performance (981 held-out sessions), predicting `energy_consumed_kwh`:
 

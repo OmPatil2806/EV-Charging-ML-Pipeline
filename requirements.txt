@@ -10,8 +10,7 @@ joblib==1.6.0
 
 # Visualization
 matplotlib==3.11.2
-seaborn==0.13.2
-plotly==5.23.0
+plotly==7.1.0
 
 # Serving
 fastapi==0.141.1
@@ -20,7 +19,7 @@ pydantic==2.13.5
 httpx==0.28.1  # required by fastapi.testclient.TestClient in tests
 
 # Dashboard
-streamlit==1.37.1
+streamlit==1.64.0
 
 # Testing
 pytest==8.3.2
