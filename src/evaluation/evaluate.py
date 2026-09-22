@@ -96,12 +96,17 @@ def save_artifacts(best_name, best_model, preprocessor, metrics, cfg):
 
     joblib.dump(preprocessor, artifacts_dir / cfg["artifacts"]["preprocessor_file"])
 
+    keras_path = artifacts_dir / f"{cfg['artifacts']['best_model_file']}.keras"
+    sklearn_path = artifacts_dir / f"{cfg['artifacts']['best_model_file']}.pkl"
+
     if best_name == "neural_net":
-        model_path = artifacts_dir / f"{cfg['artifacts']['best_model_file']}.keras"
-        best_model.save(model_path)
+        best_model.save(keras_path)
+        sklearn_path.unlink(missing_ok=True)  # remove a stale sklearn model from a previous run
+        model_path = keras_path
     else:
-        model_path = artifacts_dir / f"{cfg['artifacts']['best_model_file']}.pkl"
-        joblib.dump(best_model, model_path)
+        joblib.dump(best_model, sklearn_path)
+        keras_path.unlink(missing_ok=True)  # remove a stale neural net from a previous run
+        model_path = sklearn_path
 
     metrics_out = {"leaderboard": metrics, "best_model": best_name}
     with open(artifacts_dir / cfg["artifacts"]["metrics_file"], "w") as f:

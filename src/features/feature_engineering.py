@@ -12,8 +12,7 @@ import pandas as pd
 from src.data.cleaning import clean_data
 from src.data.ingestion import load_raw_data
 from src.utils.config import load_config, resolve_path
-
-WEEKEND_DAYS = {"Saturday", "Sunday"}
+from src.utils.time_features import WEEKEND_DAYS
 
 
 def add_time_features(df: pd.DataFrame) -> pd.DataFrame:

@@ -34,7 +34,7 @@ generate_synthetic_data.py
     evaluate.py  (RMSE / MAE / R² leaderboard, feature importances, residual plots)
         │
         ▼
-  best model + scaler + encoder  →  models_artifacts/
+  best model + preprocessor  →  models_artifacts/
         │
         ├──▶ api/main.py       (FastAPI: POST /predict)
         └──▶ dashboard/app.py  (Streamlit: EDA + model comparison + live prediction)
@@ -72,7 +72,7 @@ EV-Charging-ML-Pipeline/
 - [x] Phase 4 — Model training (classical ML + Keras MLP)
 - [x] Phase 5 — Evaluation & model selection
 - [x] Phase 6 — Pipeline orchestration
-- [ ] Phase 7 — Inference API (FastAPI)
+- [x] Phase 7 — Inference API (FastAPI)
 - [ ] Phase 8 — Dashboard (Streamlit)
 - [ ] Phase 9 — Tests & documentation
 
@@ -115,7 +115,47 @@ Note: exact metrics vary slightly between runs (random train/test split, neural 
 initialization) — Gradient Boosting and the Neural Net consistently trade the top spot,
 both well ahead of the linear baselines.
 
-## 7. Results
+## 7. Inference API
+
+Once the pipeline has produced `models_artifacts/` (run Phase 6 first), serve predictions with:
+
+```bash
+uvicorn api.main:app --reload
+```
+
+- `GET /health` — service + model-loaded status
+- `GET /` — which model is currently serving, and its test-set metrics
+- `POST /predict` — predict energy consumed (kWh) for a session
+
+```bash
+curl -X POST http://127.0.0.1:8000/predict \
+  -H "Content-Type: application/json" \
+  -d '{
+    "vehicle_model": "Tesla Model 3",
+    "battery_capacity_kwh": 60.0,
+    "charger_type": "DC Fast Charger",
+    "charging_start_time": "2024-06-15T18:30:00",
+    "charging_duration_hours": 0.45,
+    "charging_rate_kw": 90.0,
+    "charging_cost_usd": 16.8,
+    "soc_start_pct": 20.0,
+    "soc_end_pct": 80.0,
+    "distance_since_last_charge_km": 200.0,
+    "temperature_c": 20.0,
+    "vehicle_age_years": 2.0,
+    "user_type": "Long-Distance Traveler"
+  }'
+# {"predicted_energy_kwh": 40.51, "model_used": "neural_net"}
+```
+
+The API derives `day_of_week`/`time_of_day` from `charging_start_time` and reuses the exact same
+`add_time_features`/`add_physics_feature` functions from Phase 3 to build engineered features — so
+there's a single source of truth for feature construction between training and serving, and the
+saved preprocessor guarantees identical scaling/encoding at inference time.
+
+Interactive API docs (Swagger UI): `http://127.0.0.1:8000/docs`
+
+## 8. Results
 
 Test-set performance (981 held-out sessions), predicting `energy_consumed_kwh`:
 
