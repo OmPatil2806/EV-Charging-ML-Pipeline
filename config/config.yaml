@@ -1,0 +1,65 @@
+# Central configuration for the EV Charging ML pipeline.
+# Every phase reads paths/params from here instead of hardcoding them.
+
+random_seed: 42
+
+data:
+  n_sessions: 5000
+  raw_path: "data/raw/ev_charging_sessions.csv"
+  processed_path: "data/processed/ev_charging_features.csv"
+  missing_value_rate: 0.02      # fraction of rows with missing values injected per column
+  outlier_rate: 0.01            # fraction of rows with injected out-of-range values
+
+target_column: "energy_consumed_kwh"
+
+numeric_features:
+  - battery_capacity_kwh
+  - charging_rate_kw
+  - charging_duration_hours
+  - charging_cost_usd
+  - soc_start_pct
+  - soc_end_pct
+  - soc_change_pct
+  - distance_since_last_charge_km
+  - temperature_c
+  - vehicle_age_years
+  - start_hour
+  - is_weekend
+  - expected_energy_kwh          # physics-based feature (battery * soc_change / 100)
+
+categorical_features:
+  - vehicle_model
+  - charger_type
+  - user_type
+  - time_of_day
+  - day_of_week
+
+train_test_split:
+  test_size: 0.2
+  val_size: 0.1                  # carved out of the training set, used for early stopping / tuning
+
+models:
+  linear_regression: {}
+  ridge:
+    alpha: [0.1, 1.0, 10.0]
+  random_forest:
+    n_estimators: [100, 300]
+    max_depth: [8, 16, null]
+  gradient_boosting:
+    n_estimators: [100, 300]
+    learning_rate: [0.05, 0.1]
+    max_depth: [3, 5]
+  neural_net:
+    hidden_layers: [64, 32]
+    dropout: 0.2
+    learning_rate: 0.001
+    epochs: 100
+    batch_size: 32
+    early_stopping_patience: 10
+
+artifacts:
+  dir: "models_artifacts"
+  best_model_file: "best_model"
+  scaler_file: "scaler.pkl"
+  encoder_file: "encoder.pkl"
+  metrics_file: "metrics.json"
