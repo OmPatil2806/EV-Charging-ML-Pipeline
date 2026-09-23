@@ -4,7 +4,7 @@ Predicts energy consumption (kWh) for an EV charging session from session charac
 (vehicle, charger type, time of day, battery capacity, state of charge, etc.), and compares
 classical ML and deep learning models on the task.
 
-> Status: under active development. This README is updated as each phase lands.
+> Status: complete. All 9 build phases below are implemented, tested, and reproducible end-to-end.
 
 ## 1. Business Problem
 
@@ -61,10 +61,10 @@ EV-Charging-ML-Pipeline/
 │   └── utils/                    # config.py, time_features.py
 ├── pipeline/run_pipeline.py      # end-to-end orchestration
 ├── models_artifacts/             # saved best model + preprocessing artifacts
-├── notebooks/                    # EDA & experiments (readable narrative)
+├── notebooks/eda_and_experiments.ipynb  # executed EDA + model comparison narrative
 ├── api/                          # FastAPI inference service
 ├── dashboard/app.py              # Streamlit app (EDA, model comparison, live prediction)
-└── tests/                        # unit tests
+└── tests/                        # 40 unit/integration tests across every module above
 ```
 
 ## 4. Build Phases
@@ -78,7 +78,7 @@ EV-Charging-ML-Pipeline/
 - [x] Phase 6 — Pipeline orchestration
 - [x] Phase 7 — Inference API (FastAPI)
 - [x] Phase 8 — Dashboard (Streamlit)
-- [ ] Phase 9 — Tests & documentation
+- [x] Phase 9 — Tests & documentation
 
 ## 5. Setup
 
@@ -197,3 +197,48 @@ Reproduce with:
 ```bash
 python -m src.evaluation.evaluate
 ```
+
+A full narrative walkthrough of this analysis — with the same plots, rendered inline — is in
+[`notebooks/eda_and_experiments.ipynb`](notebooks/eda_and_experiments.ipynb).
+
+## 10. Testing
+
+40 tests across every module (`pytest tests/`):
+
+| File | Covers |
+|---|---|
+| `test_generate_synthetic_data.py` | synthetic data generation: schema, physical plausibility, seed determinism, injected data-quality issues |
+| `test_ingestion.py` | raw data summary stats |
+| `test_cleaning.py` | dedup, missing-target drop, median imputation, range capping |
+| `test_feature_engineering.py` | time features, SoC change, the physics feature, identifier column drop |
+| `test_models.py` | preprocessing pipeline (incl. leakage: unseen test categories), model grid, Keras MLP construction/training |
+| `test_train.py` | `train_all_models()` end-to-end on a small synthetic dataset with known signal |
+| `test_evaluate.py` | metric computation, best-model selection logic |
+| `test_inference.py` | shared scoring path, missing-artifacts error message, prediction sanity bounds |
+| `test_api.py` | request schema validation, live `/predict` and `/health` (skipped if artifacts aren't built yet) |
+
+```bash
+pip install -r requirements.txt
+pytest tests/ -v
+```
+
+Tests that need trained model artifacts (`test_inference.py`, `test_api.py`) skip cleanly with a
+clear reason if `python pipeline/run_pipeline.py` hasn't been run yet, rather than failing.
+
+## 11. Limitations & Future Work
+
+- **Synthetic data.** The dataset is generated, not real-world EV telemetry. The physical
+  relationship (Battery Capacity × ΔSoC / efficiency) is realistic, but real charging data would
+  have messier, weaker correlations, more edge cases, and likely additional unmodeled factors
+  (battery chemistry, charging curve tapering, grid conditions).
+- **Neural net run-to-run variance.** The Keras MLP's exact metrics shift slightly between runs
+  even with a fixed seed (TensorFlow doesn't guarantee full operation-level determinism on CPU).
+  Gradient Boosting and the neural net consistently trade the top spot; both consistently beat the
+  linear baselines.
+- **No experiment tracking (e.g. MLflow).** Metrics are persisted to `metrics.json` per run, but
+  there's no run history/comparison UI — a reasonable next step if this were run repeatedly over
+  time with changing data or hyperparameters.
+- **No containerization/CI.** The project runs from a local virtualenv; a `Dockerfile` and a CI
+  workflow (running `pytest` on push) would be the natural next additions for a deployed version.
+- **Single-session prediction only.** The API/dashboard predict one session at a time; a batch
+  `/predict-many` endpoint would be a small, useful extension.
