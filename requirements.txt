@@ -22,7 +22,8 @@ httpx==0.28.1  # required by fastapi.testclient.TestClient in tests
 streamlit==1.64.0
 
 # Testing
-pytest==8.3.2
+pytest==9.1.1
 
 # Notebook
-jupyter==1.0.0
+jupyter==1.1.1
+nbconvert==7.17.1  # only needed to re-execute notebooks/eda_and_experiments.ipynb
