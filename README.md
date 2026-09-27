@@ -14,7 +14,7 @@ generate_synthetic_data.py  (physics-based signal: Energy ≈ f(Battery, ΔSoC, 
         ▼
   evaluate → auto-select best model → models_artifacts/
         ▼
-  dashboard/app.py  (Streamlit: EDA + model comparison + live prediction)
+  dashboard/  (Streamlit, layered: pages -> components -> services -> src/)
 ```
 
 ## Project Structure
@@ -29,9 +29,15 @@ src/
 ├── evaluation/             # leaderboard, feature importances, residual plots
 └── inference.py            # shared scoring logic
 pipeline/run_pipeline.py   # one-command end-to-end run
-dashboard/app.py           # Streamlit app
+dashboard/
+├── app.py                 # entrypoint: navigation wiring only
+├── pages/                  # Overview, Data Exploration, Model Comparison, Live Prediction
+├── components/             # reusable render functions (charts, KPI cards, form, sidebar)
+├── services/                # cached data/model access - the only layer touching disk
+├── theme/                  # validated chart color tokens
+└── state.py                 # typed session-state accessors (filters, prediction history)
 notebooks/                 # executed EDA + model comparison notebook
-tests/                     # 40 tests across every module
+tests/                     # 44 tests across every module, incl. dashboard smoke tests
 ```
 
 ## Quickstart
@@ -42,7 +48,7 @@ pip install -r requirements.txt
 
 python pipeline/run_pipeline.py      # generate data, train, evaluate, save best model
 streamlit run dashboard/app.py       # explore data, compare models, try live predictions
-pytest tests/ -v                     # 40 tests
+pytest tests/ -v                     # 44 tests
 ```
 
 ## Results
