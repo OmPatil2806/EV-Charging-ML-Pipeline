@@ -51,6 +51,15 @@ streamlit run dashboard/app.py       # explore data, compare models, try live pr
 pytest tests/ -v                     # 44 tests
 ```
 
+## Dashboard
+
+`streamlit run dashboard/app.py` — 4 pages, sidebar navigation:
+
+- **Overview** — KPIs (sessions, best model, R², RMSE) and pipeline status at a glance.
+- **Data Exploration** — feature distributions, correlation with target, category counts; filterable by vehicle model / charger type from the sidebar.
+- **Model Comparison** — test-set leaderboard, RMSE chart, residual plots.
+- **Live Prediction** — score a hypothetical session, with a running history of recent tries.
+
 ## Results
 
 Test-set performance (981 held-out sessions):
